@@ -1,0 +1,17 @@
+[package]
+name = "krumplitube"
+version = "0.1.0"
+authors = ["Josh Megnauth <jo.sh@tutanota.com>"]
+edition = "2024"
+description = "Android player for Invidious, PeerTube, and Piped."
+readme = "README.md"
+repository = "https://github.com/joshuamegnauth54/krumplitube"
+license = "GPL-3.0-or-later"
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+strip = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
