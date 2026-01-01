@@ -6,7 +6,7 @@
 
 use serde::Deserialize;
 
-use crate::api::common::{AudioCodec, AudioFormat};
+use crate::api::common::{Codec, AudioFormat};
 
 #[derive(Deserialize)]
 #[serde(rename = "camelCase")]
@@ -19,6 +19,6 @@ pub struct Streams {
 #[serde(rename = "camelCase")]
 pub struct AudioStream {
     pub bitrate: u16,
-    pub codec: AudioCodec,
+    pub codec: Codec,
     pub format: AudioFormat,
 }

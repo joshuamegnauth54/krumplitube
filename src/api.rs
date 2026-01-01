@@ -2,7 +2,8 @@
 
 //! API wrappers for KrumpliTube.
 
-pub mod common;
+pub mod codecs;
+pub mod error;
 pub mod invidious;
 pub mod peertube;
 pub mod piped;
