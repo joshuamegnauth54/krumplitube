@@ -10,7 +10,7 @@ use smol_str::SmolStr;
 pub const ENDPOINT_STATS: &str = "api/v1/stats/";
 
 #[derive(Deserialize)]
-#[serde(rename = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub struct Stats {
     pub version: SmolStr,
     pub software: Software,
@@ -21,7 +21,7 @@ pub struct Stats {
 }
 
 #[derive(Deserialize)]
-#[serde(rename = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub struct Software {
     /// Always "invidious."
     pub name: SmolStr,
@@ -30,34 +30,31 @@ pub struct Software {
     pub branch: SmolStr,
 }
 
-#[derive(Deserialize)]
-#[serde(rename = "camelCase")]
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
 pub struct Usage {
     pub users: Users,
 }
 
-#[derive(Deserialize)]
-#[serde(rename = "camelCase")]
+#[derive(Default, Deserialize)]
+#[serde(default, rename = "camelCase")]
 pub struct Users {
     pub total: u32,
     pub active_half_year: u32,
     pub active_month: u32,
 }
 
-#[derive(Deserialize)]
-#[serde(rename = "camelCase")]
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
 pub struct Metadata {
     pub updated_at: u64,
     pub last_channel_refreshed_at: u64,
 }
 
-#[derive(Deserialize, Default)]
-#[serde(rename = "camelCase")]
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
 pub struct Playback {
-    #[serde(default)]
     pub total_requests: u32,
-    #[serde(default)]
     pub successful_requests: u32,
-    #[serde(default)]
     pub ratio: f32,
 }

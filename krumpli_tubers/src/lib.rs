@@ -3,3 +3,4 @@
 //! KrumpliTube is a small, minimalist player for Invidious and Piped.
 
 pub mod api;
+pub mod serde_helpers;

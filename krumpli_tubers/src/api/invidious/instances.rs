@@ -2,16 +2,20 @@
 
 //! Retrieve Invidious instances.
 
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 use smol_str::SmolStr;
 use url::Url;
 
 pub use super::v1::stats::Stats;
 
+use crate::serde_helpers;
+
+/// List of public Invidious instances.
 pub const INSTANCES: &str = "https://api.invidious.io/instances.json";
 
-#[derive(Deserialize)]
-#[serde(transparent)]
+/// Public instances as parsed from the Invidious API.
+///
+/// See: https://api.invidious.io
 pub struct Instances {
     pub instances: Vec<Instance>,
 }
@@ -27,13 +31,65 @@ impl Instances {
     }
 }
 
+impl<'de> Deserialize<'de> for Instances {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        struct Delegate {
+            #[serde(rename = "0")]
+            name: SmolStr,
+            #[serde(rename = "1")]
+            data: Instance,
+        }
+
+        let instances = Vec::<Delegate>::deserialize(deserializer)?
+            .into_iter()
+            .map(
+                |Delegate {
+                     name,
+                     data:
+                         Instance {
+                             flag,
+                             region,
+                             stats,
+                             cors,
+                             api,
+                             protocol_type,
+                             uri,
+                             monitor,
+                             ..
+                         },
+                 }| Instance {
+                    name,
+                    flag,
+                    region,
+                    stats,
+                    cors,
+                    api,
+                    protocol_type,
+                    uri,
+                    monitor,
+                },
+            )
+            .collect();
+
+        Ok(Self { instances })
+    }
+}
+
 #[derive(Deserialize)]
-#[serde(rename = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub struct Instance {
+    #[serde(skip)]
+    pub name: SmolStr,
     pub flag: SmolStr,
     pub region: SmolStr,
-    pub stats: Stats,
+    pub stats: Option<Stats>,
+    #[serde(with = "serde_helpers::option_bool")]
     pub cors: bool,
+    #[serde(with = "serde_helpers::option_bool")]
     pub api: bool,
     #[serde(rename = "type")]
     pub protocol_type: SmolStr,
@@ -46,5 +102,25 @@ pub struct Instance {
 ///
 /// Invidious uses: https://updown.io/
 #[derive(Deserialize, Default)]
-#[serde(rename = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub struct Monitor;
+
+#[cfg(test)]
+mod tests {
+    use reqwest::{Client, Result};
+
+    use super::{INSTANCES, Instances};
+
+    #[tokio::test]
+    async fn instances_deserialize() -> Result<()> {
+        let instances: Instances = Client::new()
+            .get(INSTANCES)
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
+
+        Ok(())
+    }
+}
