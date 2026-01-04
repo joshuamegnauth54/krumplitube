@@ -7,4 +7,3 @@ pub mod error;
 pub mod invidious;
 pub mod mime;
 pub mod peertube;
-pub mod piped;
