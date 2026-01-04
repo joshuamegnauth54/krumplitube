@@ -4,4 +4,5 @@
 //!
 //! See: https://docs.invidious.io/api/
 
+pub mod instances;
 pub mod v1;
