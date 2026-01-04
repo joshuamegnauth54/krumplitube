@@ -1,21 +1,32 @@
 [package]
 name = "krumplitube"
 version = "0.1.0"
-authors = ["Josh Megnauth <jo.sh@tutanota.com>"]
-edition = "2024"
-description = "Android player for Invidious, PeerTube, and Piped."
+authors.workspace = true
+edition.workspace = true
+description = "Android player for Invidious and PeerTube."
 readme = "README.md"
 repository = "https://github.com/joshuamegnauth54/krumplitube"
-license = "GPL-3.0-or-later"
+license.workspace = true
 
 [profile.release]
 codegen-units = 1
 lto = "fat"
 strip = true
 
-[dependencies]
+[workspace]
+members = ["krumpli_tubers"]
+
+[workspace.package]
+authors = ["Josh Megnauth <jo.sh@tutanota.com>"]
+edition = "2024"
+license = "GPL-3.0-or-later"
+
+[workspace.dependencies]
 mime = "0.3"
 serde = { version = "1", features = ["derive"] }
 serde_bytes = "0.11"
 smol_str = { version = "0.3", features = ["serde"] }
 url = "2"
+
+[dependencies]
+krumpli_tubers = { path = "krumpli_tubers" }

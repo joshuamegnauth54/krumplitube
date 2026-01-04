@@ -1,0 +1,14 @@
+[package]
+name = "krumpli_tubers"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+description = "API wrappers for Invidious and PeerTube."
+license.workspace = true
+
+[dependencies]
+mime.workspace = true
+serde.workspace = true
+serde_bytes.workspace = true
+smol_str.workspace = true
+url.workspace = true

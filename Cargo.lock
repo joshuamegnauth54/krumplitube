@@ -140,7 +140,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "krumplitube"
+name = "krumpli_tubers"
 version = "0.1.0"
 dependencies = [
  "mime",
@@ -148,6 +148,13 @@ dependencies = [
  "serde_bytes",
  "smol_str",
  "url",
+]
+
+[[package]]
+name = "krumplitube"
+version = "0.1.0"
+dependencies = [
+ "krumpli_tubers",
 ]
 
 [[package]]
