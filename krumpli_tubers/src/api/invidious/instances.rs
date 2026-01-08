@@ -8,7 +8,10 @@ use url::Url;
 
 pub use super::v1::stats::Stats;
 
-use crate::serde_helpers;
+use crate::serde_helpers::{
+    self,
+    exact_str::{ExactStr, FLAG_LEN},
+};
 
 /// List of public Invidious instances.
 pub const INSTANCES: &str = "https://api.invidious.io/instances.json";
@@ -84,8 +87,8 @@ impl<'de> Deserialize<'de> for Instances {
 pub struct Instance {
     #[serde(skip)]
     pub name: SmolStr,
-    pub flag: SmolStr,
-    pub region: SmolStr,
+    pub flag: ExactStr<FLAG_LEN>,
+    pub region: ExactStr<2>,
     pub stats: Option<Stats>,
     #[serde(with = "serde_helpers::option_bool")]
     pub cors: bool,

@@ -1,0 +1,35 @@
+# Based off of: https://codekobold.io/gitlab-ci-for-rust.html
+
+image: "rust:latest"
+
+include:
+  - component: gitlab.com/components/sast/sast@main
+
+default:
+  interruptible: true
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}"
+    paths: [.cargo, .rustup, target]
+  artifacts:
+    when: always
+    paths: [.cargo, .rustup, target]
+
+variables:
+  CARGO_HOME: "${CI_PROJECT_DIR}/.cargo"
+  RUSTUP_HOME: "${CI_PROJECT_DIR}/.rustup"
+  RUSTFLAGS: -Dwarnings
+  SECRET_DETECTION_ENABLED: "true"
+
+format_check:
+  script:
+    - rustup component add rustfmt
+    - cargo fmt --check
+
+lint:
+  script:
+    - rustup component add clippy
+    - cargo clippy --workspace --all-features --all-targets --bins --tests
+
+test:
+  script:
+    - cargo test --workspace --all-features
