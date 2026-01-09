@@ -95,10 +95,22 @@ pub struct Instance {
     #[serde(with = "serde_helpers::option_bool")]
     pub api: bool,
     #[serde(rename = "type")]
-    pub protocol_type: SmolStr,
+    pub protocol_type: ProtocolType,
     pub uri: Url,
     #[serde(skip)]
     pub monitor: Monitor,
+}
+
+/// Invidious host's protocol.
+///
+/// The few remaining instances are HTTPS but there is at least one Tor node.
+#[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ProtocolType {
+    Http,
+    Https,
+    Onion,
+    I2p,
 }
 
 /// Uptime monitor stats.

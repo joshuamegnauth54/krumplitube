@@ -1,0 +1,42 @@
+name: Build and test krumpli
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -Dwarnings
+  RUST_LOG: debug
+
+jobs:
+  lints:
+    runs-on: ubuntu-latest
+
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+
+    - name: Install Rust
+      run: rustup default stable && rustup update
+
+    - name: Formatting
+      run: cargo fmt --all --check
+
+    - name: Clippy
+      run: 
+        - rustup component add clippy
+        - cargo clippy --workspace --all-features --all-targets --bins --tests
+
+    - name: Test
+      run: cargo test --workspace --all-features --verbose -- --nocapture
+
+    - name: Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo
+          target
+        key: ${{ runner.os }}-cargo${{ hashFiles('**/Cargo.lock') }}

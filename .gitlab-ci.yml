@@ -22,14 +22,17 @@ variables:
 
 format_check:
   script:
+    - rustup default stable
     - rustup component add rustfmt
     - cargo fmt --check
 
 lint:
   script:
+    - rustup default stable
     - rustup component add clippy
     - cargo clippy --workspace --all-features --all-targets --bins --tests
 
 test:
   script:
-    - cargo test --workspace --all-features
+    - rustup default stable
+    - cargo test --workspace --verbose --all-features -- --nocapture
