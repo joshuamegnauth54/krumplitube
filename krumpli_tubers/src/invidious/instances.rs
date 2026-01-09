@@ -116,7 +116,7 @@ mod tests {
 
     #[tokio::test]
     async fn instances_deserialize() -> Result<()> {
-        let instances: Instances = Client::new()
+        let _instances: Instances = Client::new()
             .get(INSTANCES)
             .send()
             .await?

@@ -13,7 +13,7 @@ use serde::{
 };
 use serde_bytes::Bytes;
 
-use crate::api::error::ApiError;
+use crate::error::ApiError;
 
 pub struct MediaContainer {
     pub container: ContainerType,
