@@ -10,7 +10,7 @@ pub use super::v1::stats::Stats;
 
 use crate::serde_helpers::{
     self,
-    exact_str::{ExactStr, FLAG_LEN},
+    exact_str::{ExactStr, FLAG_LEN, REGION_LEN},
 };
 
 /// List of public Invidious instances.
@@ -88,7 +88,7 @@ pub struct Instance {
     #[serde(skip)]
     pub name: SmolStr,
     pub flag: ExactStr<FLAG_LEN>,
-    pub region: ExactStr<2>,
+    pub region: ExactStr<REGION_LEN>,
     pub stats: Option<Stats>,
     #[serde(with = "serde_helpers::option_bool")]
     pub cors: bool,

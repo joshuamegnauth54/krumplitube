@@ -5,3 +5,4 @@
 //! See: https://docs.invidious.io/api/
 
 pub mod stats;
+pub mod videos;

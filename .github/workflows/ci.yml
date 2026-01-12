@@ -2,9 +2,9 @@ name: Build and test krumpli
 
 on:
   push:
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -12,31 +12,36 @@ env:
   RUST_LOG: debug
 
 jobs:
-  lints:
+  formatting:
+    name: Check formatting
     runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v6
+        - uses: dtolnay/rust-toolchain@stable
+          with:
+            components: rustfmt
+        - run: cargo fmt --all --check
 
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v5
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - run: cargo clippy --workspace --all-features --all-targets --bins --tests
 
-    - name: Install Rust
-      run: rustup default stable && rustup update
-
-    - name: Formatting
-      run: cargo fmt --all --check
-
-    - name: Clippy
-      run: 
-        - rustup component add clippy
-        - cargo clippy --workspace --all-features --all-targets --bins --tests
-
-    - name: Test
-      run: cargo test --workspace --all-features --verbose -- --nocapture
-
-    - name: Cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cargo
-          target
-        key: ${{ runner.os }}-cargo${{ hashFiles('**/Cargo.lock') }}
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            target
+          key: ${{ runner.os }}-cargo${{ hashFiles('**/Cargo.lock') }}
+      - run: cargo test --workspace --all-features --verbose -- --nocapture

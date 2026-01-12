@@ -29,6 +29,9 @@ pub const FLAG_LEN: usize = {
     us.len()
 };
 
+pub const LANG_LEN: usize = 2;
+pub const REGION_LEN: usize = 2;
+
 /// A string that is always `LEN` bytes and stack allocated.
 pub struct ExactStr<const LEN: usize>([u8; LEN]);
 
