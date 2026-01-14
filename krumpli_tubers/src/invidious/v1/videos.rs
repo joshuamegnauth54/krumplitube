@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use std::num::NonZeroU32;
+use std::{num::NonZeroU32, time::Duration};
 
 use mime::Mime;
 use serde::Deserialize;
@@ -10,6 +10,7 @@ use url::Url;
 use crate::serde_helpers::{
     self,
     exact_str::{ExactStr, LANG_LEN, REGION_LEN},
+    time,
     video_id::YouTubeVideoId,
 };
 
@@ -71,7 +72,8 @@ pub struct VideoMetadata {
     #[serde(default)]
     pub author_verified: bool,
     pub author_thumbnails: Vec<AuthorThumbnail>,
-    pub length_seconds: u32,
+    #[serde(deserialize_with = "time::from_secs")]
+    pub length_seconds: Duration,
     pub view_count: u32,
     pub view_count_text: SmolStr,
 }
@@ -151,8 +153,10 @@ pub struct AdaptiveFormat {
     pub resolution: Option<SmolStr>,
     pub fps: u32,
     pub size: SmolStr,
-    pub target_duration_sec: Option<u64>,
-    pub max_dvr_duration_sec: Option<u64>,
+    #[serde(deserialize_with = "time::from_secs_opt")]
+    pub target_duration_sec: Duration,
+    #[serde(deserialize_with = "time::from_secs_opt")]
+    pub max_dvr_duration_sec: Duration,
     #[serde(default)]
     pub audio_quality: Option<SmolStr>,
     #[serde(default)]
