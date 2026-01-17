@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! A wrapper around [`reqwest::Client`] to set up the user agent and other helpful options.
+
+use std::time::Duration;
+
+use reqwest::{Client, Proxy, Result, header::HeaderValue};
+
+const DEFAULT_TIMEOUT: Duration = Duration::from_secs(60);
+const DEFAULT_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+
+#[derive(Clone)]
+pub struct KrumpliClient {
+    client: Client,
+}
+
+impl KrumpliClient {
+    pub fn new(
+        timeout: Duration,
+        user_agent: impl TryInto<HeaderValue, Error: Into<http::Error>>,
+        proxy: Option<Proxy>,
+    ) -> Result<Self> {
+        let builder = Client::builder()
+            .deflate(true)
+            .brotli(true)
+            .gzip(true)
+            .hickory_dns(true)
+            .https_only(true)
+            .timeout(timeout)
+            .tls_backend_rustls()
+            .user_agent(user_agent);
+
+        if let Some(proxy) = proxy {
+            builder.proxy(proxy)
+        } else {
+            builder
+        }
+        .build()
+        .map(|client| Self { client })
+    }
+
+    /// Return a clone of the inner [`Client`].
+    #[inline]
+    pub fn inner(&self) -> Client {
+        self.client.clone()
+    }
+}
+
+impl Default for KrumpliClient {
+    /// Create a [`KrumpliClient`] with the default user agent and timeout.
+    ///
+    /// Creating a client can fail. In that case, an even more generic client is used instead.
+    fn default() -> Self {
+        KrumpliClient::new(DEFAULT_TIMEOUT, DEFAULT_USER_AGENT, None).unwrap_or_else(|_| Self {
+            client: Client::default(),
+        })
+    }
+}

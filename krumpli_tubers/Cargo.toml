@@ -8,11 +8,11 @@ license.workspace = true
 
 [dependencies]
 mime.workspace = true
-reqwest.workspace = true
 serde.workspace = true
 serde_bytes.workspace = true
 smol_str.workspace = true
 url.workspace = true
 
 [dev-dependencies]
+krumplipure = { path = "../krumplipure" }
 tokio = { workspace = true, features = ["macros", "rt"] }

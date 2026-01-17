@@ -8,31 +8,30 @@ include:
 default:
   interruptible: true
   cache:
-    key: "${CI_COMMIT_REF_SLUG}"
-    paths: [.cargo, .rustup, target]
+    key:
+      files: [ "Cargo.lock" ]
+    paths: [.cargo, target]
   artifacts:
     when: always
-    paths: [.cargo, .rustup, target]
+    paths: [.cargo, target]
 
 variables:
   CARGO_HOME: "${CI_PROJECT_DIR}/.cargo"
+  RUSTFLAGS: "-Dwarnings"
   RUSTUP_HOME: "${CI_PROJECT_DIR}/.rustup"
-  RUSTFLAGS: -Dwarnings
+  RUSTUP_TOOLCHAIN: "stable"
   SECRET_DETECTION_ENABLED: "true"
 
 format_check:
   script:
-    - rustup default stable
     - rustup component add rustfmt
     - cargo fmt --check
 
 lint:
   script:
-    - rustup default stable
     - rustup component add clippy
     - cargo clippy --workspace --all-features --all-targets --bins --tests
 
 test:
   script:
-    - rustup default stable
-    - cargo test --workspace --verbose --all-features -- --nocapture
+    - cargo test --workspace --all-features --verbose -- --nocapture
