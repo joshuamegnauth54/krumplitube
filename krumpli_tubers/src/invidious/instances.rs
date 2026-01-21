@@ -8,9 +8,12 @@ use url::Url;
 
 pub use super::v1::stats::Stats;
 
-use crate::serde_helpers::{
-    self,
-    exact_str::{ExactStr, FLAG_LEN, REGION_LEN},
+use crate::{
+    BuildApiUrl, EmptyContext,
+    serde_helpers::{
+        self,
+        exact_str::{ExactStr, FLAG_LEN, REGION_LEN},
+    },
 };
 
 /// List of public Invidious instances.
@@ -119,6 +122,20 @@ pub enum ProtocolType {
 #[derive(Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Monitor;
+
+/// [`BuildApiUrl`] implementation for [`Instances`].
+pub struct InstancesUrl;
+
+impl BuildApiUrl<EmptyContext> for InstancesUrl {
+    type Item = Instances;
+
+    #[inline]
+    fn build_url(&self, _: EmptyContext) -> Url {
+        INSTANCES
+            .parse()
+            .unwrap_or_else(|e| panic!("{INSTANCES} is a URL: {e}"))
+    }
+}
 
 #[cfg(test)]
 mod tests {

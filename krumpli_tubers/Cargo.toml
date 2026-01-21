@@ -1,9 +1,9 @@
 [package]
 name = "krumpli_tubers"
 version = "0.1.0"
+description = "API wrappers for Invidious and PeerTube."
 authors.workspace = true
 edition.workspace = true
-description = "API wrappers for Invidious and PeerTube."
 license.workspace = true
 
 [dependencies]
@@ -15,4 +15,3 @@ url.workspace = true
 
 [dev-dependencies]
 krumplipure = { path = "../krumplipure" }
-tokio = { workspace = true, features = ["macros", "rt"] }

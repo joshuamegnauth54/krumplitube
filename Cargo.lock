@@ -798,7 +798,6 @@ dependencies = [
  "serde",
  "serde_bytes",
  "smol_str",
- "tokio",
  "url",
 ]
 
@@ -807,7 +806,9 @@ name = "krumplipure"
 version = "0.1.0"
 dependencies = [
  "http",
+ "krumpli_tubers",
  "reqwest",
+ "tokio",
 ]
 
 [[package]]

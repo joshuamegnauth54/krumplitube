@@ -3,3 +3,4 @@
 //! Network handlers for KrumpliTube.
 
 pub mod client;
+pub use client::KrumpliClient;

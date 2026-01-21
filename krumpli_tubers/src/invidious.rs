@@ -5,4 +5,6 @@
 //! See: https://docs.invidious.io/api/
 
 pub mod instances;
+pub use instances::{Instances, InstancesUrl};
+
 pub mod v1;
