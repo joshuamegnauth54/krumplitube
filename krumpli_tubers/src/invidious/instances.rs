@@ -9,7 +9,7 @@ use url::Url;
 pub use super::v1::stats::Stats;
 
 use crate::{
-    BuildApiUrl, EmptyContext,
+    BuildApiUrl,
     serde_helpers::{
         self,
         exact_str::{ExactStr, FLAG_LEN, REGION_LEN},
@@ -126,11 +126,13 @@ pub struct Monitor;
 /// [`BuildApiUrl`] implementation for [`Instances`].
 pub struct InstancesUrl;
 
-impl BuildApiUrl<EmptyContext> for InstancesUrl {
+impl BuildApiUrl for InstancesUrl {
     type Item = Instances;
+}
 
+impl From<InstancesUrl> for Url {
     #[inline]
-    fn build_url(&self, _: EmptyContext) -> Url {
+    fn from(_: InstancesUrl) -> Self {
         INSTANCES
             .parse()
             .unwrap_or_else(|e| panic!("{INSTANCES} is a URL: {e}"))
@@ -139,20 +141,20 @@ impl BuildApiUrl<EmptyContext> for InstancesUrl {
 
 #[cfg(test)]
 mod tests {
-    use reqwest::{Client, Result};
+    use std::fs;
 
-    use super::{INSTANCES, Instances};
+    use super::Instances;
 
-    #[tokio::test]
-    async fn instances_deserialize() -> Result<()> {
-        let _instances: Instances = Client::new()
-            .get(INSTANCES)
-            .send()
-            .await?
-            .error_for_status()?
-            .json()
-            .await?;
+    const INSTANCES_CACHED: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/test_data/invidious/instances.json"
+    );
 
-        Ok(())
+    #[test]
+    fn instances_deserialize() {
+        let raw_json = fs::read_to_string(INSTANCES_CACHED)
+            .expect("Should be able to read cached instances.json");
+        let _: Instances = serde_json::from_str(&raw_json)
+            .expect("Should be able to deserialize instances from JSON");
     }
 }

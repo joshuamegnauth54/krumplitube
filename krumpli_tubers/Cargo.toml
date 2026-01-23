@@ -15,3 +15,5 @@ url.workspace = true
 
 [dev-dependencies]
 krumplipure = { path = "../krumplipure" }
+
+serde_json.workspace = true

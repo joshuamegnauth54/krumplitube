@@ -16,11 +16,6 @@ pub mod serde_helpers;
 ///
 /// `Context` provides the data needed to build the [`Url`]. `Context` can be empty if a type
 /// doesn't need extra info or it could include a base URL, like for an instance.
-pub trait BuildApiUrl<Context> {
+pub trait BuildApiUrl: Into<Url> {
     type Item: for<'de> Deserialize<'de>;
-
-    fn build_url(&self, context: Context) -> Url;
 }
-
-/// [`BuildApiUrl`] implementations that don't need any context.
-pub struct EmptyContext;

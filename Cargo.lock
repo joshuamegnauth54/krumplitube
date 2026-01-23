@@ -797,6 +797,7 @@ dependencies = [
  "mime",
  "serde",
  "serde_bytes",
+ "serde_json",
  "smol_str",
  "url",
 ]
