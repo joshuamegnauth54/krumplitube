@@ -208,3 +208,23 @@ pub struct MusicTrack {
     pub album: String,
     pub license: SmolStr,
 }
+
+#[cfg(test)]
+mod tests {
+    use std::{fs, io};
+
+    use crate::invidious::v1::videos::Video;
+
+    const VIDEOS_CACHED: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/test_data/invidious/videos");
+
+    #[test]
+    fn videos_deserialize() -> io::Result<()> {
+        for file in fs::read_dir(VIDEOS_CACHED)? {
+            let raw_json = fs::read_to_string(file?.path())?;
+            let _: Video = serde_json::from_str(&raw_json)
+                .expect("Should be able to deserialized valid, cached JSON of a video");
+        }
+
+        Ok(())
+    }
+}
