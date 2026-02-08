@@ -4,3 +4,6 @@
 
 pub mod client;
 pub use client::KrumpliClient;
+
+pub mod invidious;
+pub use invidious::InvidiousClient;
