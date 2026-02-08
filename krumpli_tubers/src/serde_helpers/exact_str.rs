@@ -97,10 +97,10 @@ impl<'de, const LEN: usize> Deserialize<'de> for ExactStr<LEN> {
             type Value = ExactStr<LEN>;
 
             fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
-                write!(formatter, "a string with length {LEN}")
+                write!(formatter, "a string with exact length {LEN}")
             }
 
-            fn visit_borrowed_str<E>(self, s: &'de str) -> Result<Self::Value, E>
+            fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
             where
                 E: DeError,
             {

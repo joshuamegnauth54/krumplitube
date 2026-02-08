@@ -2,6 +2,8 @@
 
 //! Retrieve Invidious instances.
 
+use std::convert::Infallible;
+
 use serde::{Deserialize, Deserializer};
 use smol_str::SmolStr;
 use url::Url;
@@ -130,12 +132,15 @@ impl BuildApiUrl for InstancesUrl {
     type Item = Instances;
 }
 
-impl From<InstancesUrl> for Url {
+#[allow(clippy::infallible_try_from)]
+impl TryFrom<InstancesUrl> for Url {
+    type Error = Infallible;
+
     #[inline]
-    fn from(_: InstancesUrl) -> Self {
-        INSTANCES
+    fn try_from(_: InstancesUrl) -> Result<Self, Self::Error> {
+        Ok(INSTANCES
             .parse()
-            .unwrap_or_else(|e| panic!("{INSTANCES} is a URL: {e}"))
+            .unwrap_or_else(|e| panic!("{INSTANCES} is a URL: {e}")))
     }
 }
 

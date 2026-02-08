@@ -17,6 +17,7 @@ const ID_LEN: usize = 11;
 pub struct YouTubeVideoId(ExactStr<ID_LEN>);
 
 impl AsRef<str> for YouTubeVideoId {
+    #[inline]
     fn as_ref(&self) -> &str {
         self.0.as_str()
     }

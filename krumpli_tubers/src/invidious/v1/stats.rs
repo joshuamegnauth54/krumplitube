@@ -6,6 +6,9 @@
 
 use serde::Deserialize;
 use smol_str::SmolStr;
+use url::Url;
+
+use crate::BuildApiUrl;
 
 pub const ENDPOINT_STATS: &str = "api/v1/stats/";
 
@@ -57,4 +60,20 @@ pub struct Playback {
     pub total_requests: u32,
     pub successful_requests: u32,
     pub ratio: f32,
+}
+
+/// [`BuildApiUrl`] implementation for [`Stats`].
+pub struct StatsUrl<'base>(&'base Url);
+
+impl BuildApiUrl for StatsUrl<'_> {
+    type Item = Stats;
+}
+
+impl TryFrom<StatsUrl<'_>> for Url {
+    type Error = url::ParseError;
+
+    #[inline]
+    fn try_from(builder: StatsUrl<'_>) -> Result<Self, Self::Error> {
+        builder.0.join(ENDPOINT_STATS)
+    }
 }

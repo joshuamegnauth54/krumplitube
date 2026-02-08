@@ -8,7 +8,7 @@ use reqwest::Url;
 async fn fetch_invidious_instances() -> reqwest::Result<()> {
     KrumpliClient::default()
         .inner()
-        .get(Url::from(InstancesUrl))
+        .get(Url::try_from(InstancesUrl).expect("Infallible"))
         .send()
         .await?
         .error_for_status()?

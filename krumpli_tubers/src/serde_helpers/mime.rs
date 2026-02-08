@@ -13,6 +13,7 @@ use serde::{
     de::{Error as DeError, Visitor},
 };
 
+#[inline]
 pub fn deserialize<'de, D>(deserializer: D) -> Result<Mime, D::Error>
 where
     D: Deserializer<'de>,
@@ -29,7 +30,7 @@ impl<'de> Visitor<'de> for MimeVisitor {
         write!(formatter, "a MIME type string")
     }
 
-    fn visit_borrowed_str<E>(self, mime: &'de str) -> Result<Self::Value, E>
+    fn visit_str<E>(self, mime: &str) -> Result<Self::Value, E>
     where
         E: DeError,
     {
