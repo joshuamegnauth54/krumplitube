@@ -5,5 +5,8 @@
 pub mod client;
 pub use client::KrumpliClient;
 
+pub mod error;
+pub use error::Error;
+
 pub mod invidious;
 pub use invidious::InvidiousClient;

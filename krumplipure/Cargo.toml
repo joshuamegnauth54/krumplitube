@@ -12,6 +12,7 @@ krumpli_tubers = { path = "../krumpli_tubers" }
 http.workspace = true
 reqwest.workspace = true
 tokio = { workspace = true, features = ["macros", "rt"] }
+tracing.workspace = true
 
 [dev-dependencies]
 test-log.workspace = true

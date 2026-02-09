@@ -63,7 +63,8 @@ pub struct Playback {
 }
 
 /// [`BuildApiUrl`] implementation for [`Stats`].
-pub struct StatsUrl<'base>(&'base Url);
+#[derive(Clone, Copy)]
+pub struct StatsUrl<'base>(pub &'base Url);
 
 impl BuildApiUrl for StatsUrl<'_> {
     type Item = Stats;

@@ -2,7 +2,10 @@
 
 //! A wrapper around [`reqwest::Client`] to set up the user agent and other helpful options.
 
-use std::time::Duration;
+use std::{
+    fmt::{self, Display, Formatter},
+    time::Duration,
+};
 
 use reqwest::{Client, Proxy, Result, header::HeaderValue};
 
@@ -54,5 +57,29 @@ impl Default for KrumpliClient {
         KrumpliClient::new(DEFAULT_TIMEOUT, DEFAULT_USER_AGENT, None).unwrap_or_else(|_| Self {
             client: Client::default(),
         })
+    }
+}
+
+/// Helper for [`tracing`] to display the client type.
+#[derive(Clone, Copy)]
+pub enum BackendType {
+    Invidious,
+    PeerTube,
+    Piped,
+}
+
+impl BackendType {
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Invidious => "Invidious",
+            Self::PeerTube => "PeerTube",
+            Self::Piped => "Piped",
+        }
+    }
+}
+
+impl Display for BackendType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }

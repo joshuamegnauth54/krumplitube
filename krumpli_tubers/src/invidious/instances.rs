@@ -8,10 +8,9 @@ use serde::{Deserialize, Deserializer};
 use smol_str::SmolStr;
 use url::Url;
 
-pub use super::v1::stats::Stats;
-
 use crate::{
     BuildApiUrl,
+    invidious::v1::stats::Stats,
     serde_helpers::{
         self,
         exact_str::{ExactStr, FLAG_LEN, REGION_LEN},
