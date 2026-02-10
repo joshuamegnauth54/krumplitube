@@ -8,4 +8,7 @@ pub mod instances;
 pub use instances::{Instances, InstancesUrl};
 
 pub mod v1;
-pub use v1::stats::{Stats, StatsUrl};
+pub use v1::{
+    stats::{Stats, StatsUrl},
+    videos::{BaseVideosUrl, Video},
+};

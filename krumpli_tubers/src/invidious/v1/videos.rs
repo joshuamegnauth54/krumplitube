@@ -7,11 +7,14 @@ use serde::Deserialize;
 use smol_str::SmolStr;
 use url::Url;
 
-use crate::serde_helpers::{
-    self,
-    exact_str::{ExactStr, LANG_LEN, REGION_LEN},
-    time,
-    video_id::YouTubeVideoId,
+use crate::{
+    BuildApiUrl,
+    serde_helpers::{
+        self,
+        exact_str::{ExactStr, LANG_LEN, REGION_LEN},
+        time,
+        video_id::YouTubeVideoId,
+    },
 };
 
 pub const ENDPOINT_VIDEOS: &str = "/api/v1/videos/";
@@ -207,6 +210,22 @@ pub struct MusicTrack {
     pub artist: String,
     pub album: String,
     pub license: SmolStr,
+}
+
+/// [`BuildApiUrl`] implementation for the base of the videos API.
+#[derive(Clone, Copy)]
+pub struct BaseVideosUrl<'url>(pub &'url Url);
+
+impl BuildApiUrl for BaseVideosUrl<'_> {
+    type Item = ();
+}
+
+impl TryFrom<BaseVideosUrl<'_>> for Url {
+    type Error = url::ParseError;
+
+    fn try_from(builder: BaseVideosUrl<'_>) -> Result<Self, Self::Error> {
+        builder.0.join(ENDPOINT_VIDEOS)
+    }
 }
 
 #[cfg(test)]

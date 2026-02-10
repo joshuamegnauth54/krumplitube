@@ -24,17 +24,28 @@ pub const INSTANCES: &str = "https://api.invidious.io/instances.json";
 ///
 /// See: https://api.invidious.io
 pub struct Instances {
-    pub instances: Vec<Instance>,
+    instances: Vec<Instance>,
 }
 
 impl Instances {
+    /// Iterator over all instances.
+    #[inline]
+    pub fn iter(&self) -> impl Iterator<Item = &Instance> {
+        self.instances.iter()
+    }
+
     /// Iterator over instances with the API enabled.
     ///
     /// Most instances disable the API due to abuse. Only instances with the API enabled are useful
     /// for this app.
     #[inline]
-    pub fn enabled_api(self) -> impl Iterator<Item = Instance> {
+    pub fn into_enabled_api(self) -> impl Iterator<Item = Instance> {
         self.instances.into_iter().filter(|instance| instance.api)
+    }
+
+    /// Iterator over instances with the API enabled.
+    pub fn enabled_api(&self) -> impl Iterator<Item = &Instance> {
+        self.instances.iter().filter(|instance| instance.api)
     }
 }
 

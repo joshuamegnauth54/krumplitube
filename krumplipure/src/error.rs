@@ -19,7 +19,8 @@ impl error::Error for Error {}
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match &self.kind {
-            ErrorKind::ApiDisabled => write!(f, "API is either disabled or requires auth"),
+            ErrorKind::ApiAuth => write!(f, "API requires authentication"),
+            ErrorKind::ApiDisabled => write!(f, "API is disabled"),
             ErrorKind::MissingApiUrl => write!(
                 f,
                 "A URL, like an instance URL or endpoint, is needed for this operation"
@@ -33,6 +34,7 @@ impl Display for Error {
 
 #[derive(Debug)]
 pub enum ErrorKind {
+    ApiAuth,
     ApiDisabled,
     MissingApiUrl,
     Other(Box<dyn error::Error>),
@@ -50,9 +52,19 @@ impl From<reqwest::Error> for Error {
     fn from(error: reqwest::Error) -> Self {
         let url = error.url().cloned();
         if let Some(code) = error.status() {
-            Self {
-                url,
-                kind: ErrorKind::StatusCode(code),
+            match code {
+                StatusCode::FORBIDDEN => Self {
+                    url,
+                    kind: ErrorKind::ApiDisabled,
+                },
+                StatusCode::UNAUTHORIZED => Self {
+                    url,
+                    kind: ErrorKind::ApiAuth,
+                },
+                _ => Self {
+                    url,
+                    kind: ErrorKind::StatusCode(code),
+                },
             }
         } else if error.is_timeout() {
             Self {
