@@ -7,7 +7,7 @@ use krumpli_tubers::{
     invidious::{BaseVideosUrl, Instances, InstancesUrl, Stats, StatsUrl},
 };
 use reqwest::Url;
-use tracing::{info, instrument};
+use tracing::{debug, info, instrument};
 
 use crate::{
     Error,
@@ -60,7 +60,11 @@ impl InvidiousClient {
     async fn get_stats(&self, url: &StatsUrl<'_>) -> Result<Stats, Error> {
         self.client
             .inner()
-            .get(Url::try_from(*url).map_err(|e| ErrorKind::Other(e.into()))?)
+            .get(
+                Url::try_from(*url)
+                    .inspect(|url| debug!(%url, "Stats URL"))
+                    .map_err(|e| ErrorKind::Other(e.into()))?,
+            )
             .send()
             .await?
             .error_for_status()?
@@ -72,17 +76,18 @@ impl InvidiousClient {
     /// Set the current instance regardless if the API is enabled.
     ///
     /// This still checks that the instance is valid.
-    #[instrument(skip(self), fields(backend = %self.backend()))]
+    #[instrument(skip_all, fields(backend = %self.backend(), url = %instance))]
     pub async fn set_instance(&mut self, instance: Url) -> Result<(), Error> {
         let url = StatsUrl(&instance);
         // Test that this is an Invidious instance by hitting the stats endpoint.
         self.get_stats(&url).await?;
+        info!(url = %instance, "Instance URL changed (API unchecked)");
         self.instance = Some(instance);
         Ok(())
     }
 
     /// Set the current instance only if the API is enabled.
-    #[instrument(skip(self), fields(backend = %self.backend()))]
+    #[instrument(skip_all, fields(backend = %self.backend(), url = %instance))]
     pub async fn try_set_instance(&mut self, instance: Url) -> Result<(), Error> {
         let url = StatsUrl(&instance);
         // Test that this is an Invidious instance by hitting the stats endpoint.
@@ -92,6 +97,7 @@ impl InvidiousClient {
         let url = BaseVideosUrl(&instance);
         self.get_base_videos(&url).await?;
 
+        info!(url = %instance, "Instance URL changed (API checked)");
         self.instance = Some(instance);
         Ok(())
     }
@@ -105,11 +111,20 @@ impl InvidiousClient {
     async fn get_base_videos(&self, url: &BaseVideosUrl<'_>) -> Result<(), Error> {
         self.client
             .inner()
-            .get(Url::try_from(*url).map_err(|e| ErrorKind::Other(e.into()))?)
+            .get(
+                Url::try_from(*url)
+                    .inspect(|url| debug!(%url, "Base video URL"))
+                    .map_err(|e| ErrorKind::Other(e.into()))?,
+            )
             .send()
             .await?
             .error_for_status()
             .map(|_| ())
             .map_err(From::from)
+    }
+
+    #[cfg(any(debug_assertions, test))]
+    pub const fn inner(&self) -> &KrumpliClient {
+        &self.client
     }
 }

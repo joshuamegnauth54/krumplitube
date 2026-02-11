@@ -1,4 +1,4 @@
-name: Build and test krumpli
+name: Build and test Krumpli
 
 on:
   push:
@@ -54,11 +54,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: 
-            - aarch64-linux-android
-            - armv7-linux-androideabi
-            - x86_64-linux-android
-            - i686-linux-android
+          targets: "aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android, i686-linux-android"
       - uses: taiki-e/install-action@cargo-ndk
       - uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -84,11 +80,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: 
-            - aarch64-linux-android
-            - armv7-linux-androideabi
-            - x86_64-linux-android
-            - i686-linux-android
+          targets: "aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android, i686-linux-android"
       - uses: taiki-e/install-action@cargo-ndk
       - uses: actions/cache@v4
         with:

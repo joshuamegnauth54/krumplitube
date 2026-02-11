@@ -7,7 +7,9 @@ use std::{
     time::Duration,
 };
 
-use reqwest::{Client, Proxy, Result, header::HeaderValue};
+use reqwest::{Client, Proxy, header::HeaderValue};
+
+use crate::Error;
 
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(60);
 const DEFAULT_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
@@ -22,7 +24,7 @@ impl KrumpliClient {
         timeout: Duration,
         user_agent: impl TryInto<HeaderValue, Error: Into<http::Error>>,
         proxy: Option<Proxy>,
-    ) -> Result<Self> {
+    ) -> Result<Self, Error> {
         let builder = Client::builder()
             .deflate(true)
             .brotli(true)
@@ -40,12 +42,47 @@ impl KrumpliClient {
         }
         .build()
         .map(|client| Self { client })
+        .map_err(From::from)
     }
 
     /// Return a clone of the inner [`Client`].
     #[inline]
-    pub fn inner(&self) -> Client {
+    pub(crate) fn inner(&self) -> Client {
         self.client.clone()
+    }
+
+    /// Helper to get raw [reqwest::Response] on errors.
+    #[cfg(any(debug_assertions, test))]
+    pub async fn body_debug(
+        &self,
+        url: impl krumpli_tubers::BuildApiUrl,
+    ) -> Result<reqwest::Response, Error> {
+        use crate::error::ErrorKind;
+        use reqwest::Url;
+
+        let url: Url = url.try_into().map_err(|e| ErrorKind::Other(e.into()))?;
+        self.client.get(url).send().await.map_err(Error::from)
+    }
+
+    /// Helper to print [reqwest::Response] on error.
+    #[cfg(any(debug_assertions, test))]
+    pub async fn body_debug_trace(
+        &self,
+        url: impl krumpli_tubers::BuildApiUrl,
+    ) -> Result<(), Error> {
+        use tracing::error;
+
+        let response = self.body_debug(url).await?;
+        let url = response.url().clone();
+
+        error!(%url, status = %response.status(), "Status code from failed request");
+        for (header, value) in response.headers() {
+            error!(%url, %header, ?value, "Header from failed request");
+        }
+        let body = response.text().await.map_err(Error::from)?;
+        error!(%url, %body, "Body from failed request");
+
+        Ok(())
     }
 }
 
