@@ -80,7 +80,12 @@ impl InvidiousClient {
     pub async fn set_instance(&mut self, instance: Url) -> Result<(), Error> {
         let url = StatsUrl(&instance);
         // Test that this is an Invidious instance by hitting the stats endpoint.
-        self.get_stats(&url).await?;
+        self.client
+            .inner()
+            .get(Url::try_from(url).map_err(|e| ErrorKind::Other(e.into()))?)
+            .send()
+            .await?
+            .error_for_status()?;
         info!(url = %instance, "Instance URL changed (API unchecked)");
         self.instance = Some(instance);
         Ok(())

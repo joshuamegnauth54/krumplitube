@@ -16,6 +16,7 @@ async fn fetch_invidious_stats() -> Result<(), Error> {
             .await
             .inspect_err(|err| error!(url = %instance.uri, "{err}"))?;
 
+        info!(url = %instance.uri, "Instance set. Testing stats endpoint");
         if let Err(err) = client.stats().await {
             error!(url = %instance.uri, %err, "Fetching stats endpoint failed");
             let url = StatsUrl(&instance.uri);
