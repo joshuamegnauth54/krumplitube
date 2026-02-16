@@ -33,6 +33,7 @@ pub const LANG_LEN: usize = 2;
 pub const REGION_LEN: usize = 2;
 
 /// A string that is always `LEN` bytes and stack allocated.
+#[derive(Clone, Copy)]
 pub struct ExactStr<const LEN: usize>([u8; LEN]);
 
 impl<const LEN: usize> ExactStr<LEN> {

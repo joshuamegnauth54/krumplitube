@@ -2,6 +2,7 @@
 
 //! Invidious API driver.
 
+use http::Version;
 use krumpli_tubers::{
     BuildApiUrl,
     invidious::{BaseVideosUrl, Instances, InstancesUrl, Stats, StatsUrl},
@@ -36,6 +37,7 @@ impl InvidiousClient {
         self.client
             .inner()
             .get(Url::try_from(InstancesUrl).expect("Infallible"))
+            .version(Version::HTTP_2)
             .send()
             .await?
             .error_for_status()?
@@ -65,6 +67,7 @@ impl InvidiousClient {
                     .inspect(|url| debug!(%url, "Stats URL"))
                     .map_err(|e| ErrorKind::Other(e.into()))?,
             )
+            .version(Version::HTTP_2)
             .send()
             .await?
             .error_for_status()?
@@ -83,10 +86,11 @@ impl InvidiousClient {
         self.client
             .inner()
             .get(Url::try_from(url).map_err(|e| ErrorKind::Other(e.into()))?)
+            .version(Version::HTTP_2)
             .send()
             .await?
             .error_for_status()?;
-        info!(url = %instance, "Instance URL changed (API unchecked)");
+        info!("Instance URL changed (API unchecked)");
         self.instance = Some(instance);
         Ok(())
     }
@@ -102,7 +106,7 @@ impl InvidiousClient {
         let url = BaseVideosUrl(&instance);
         self.get_base_videos(&url).await?;
 
-        info!(url = %instance, "Instance URL changed (API checked)");
+        info!("Instance URL changed (API checked)");
         self.instance = Some(instance);
         Ok(())
     }
@@ -121,6 +125,7 @@ impl InvidiousClient {
                     .inspect(|url| debug!(%url, "Base video URL"))
                     .map_err(|e| ErrorKind::Other(e.into()))?,
             )
+            .version(Version::HTTP_2)
             .send()
             .await?
             .error_for_status()

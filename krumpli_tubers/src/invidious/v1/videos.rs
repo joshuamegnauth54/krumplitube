@@ -17,7 +17,7 @@ use crate::{
     },
 };
 
-pub const ENDPOINT_VIDEOS: &str = "/api/v1/videos/";
+pub const ENDPOINT_VIDEOS: &str = "api/v1/videos/";
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -228,11 +228,57 @@ impl TryFrom<BaseVideosUrl<'_>> for Url {
     }
 }
 
+/// [`BuildApiUrl`] implementation for [`Video`].
+#[derive(Clone, Copy)]
+pub struct VideoUrl<'url> {
+    pub url: &'url Url,
+    pub id: YouTubeVideoId,
+    /// Language
+    pub hl: Option<ExactStr<LANG_LEN>>,
+    /// ISO 3166 country code
+    pub region: Option<ExactStr<REGION_LEN>>,
+}
+
+impl BuildApiUrl for VideoUrl<'_> {
+    type Item = Video;
+}
+
+impl TryFrom<VideoUrl<'_>> for Url {
+    type Error = url::ParseError;
+
+    fn try_from(builder: VideoUrl<'_>) -> Result<Self, Self::Error> {
+        let mut url = builder
+            .url
+            .join(ENDPOINT_VIDEOS)?
+            .join(builder.id.as_ref())?;
+
+        // Unconditionally calling query_pairs_mut() causes the URL to have Some("") as the query.
+        // It's nicer for tests and consistency to avoid that.
+        if builder.hl.is_some() || builder.region.is_some() {
+            let mut query_pairs = url.query_pairs_mut();
+            if let Some(hl) = builder.hl {
+                query_pairs.append_pair("hl", hl.as_str());
+            }
+            if let Some(region) = builder.region {
+                query_pairs.append_pair("region", region.as_str());
+            }
+            query_pairs.finish();
+        }
+
+        Ok(url)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::{fs, io};
 
-    use crate::invidious::v1::videos::Video;
+    use url::Url;
+
+    use crate::{
+        invidious::v1::videos::{Video, VideoUrl},
+        serde_helpers::exact_str::ExactStr,
+    };
 
     const VIDEOS_CACHED: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/test_data/invidious/videos");
 
@@ -245,5 +291,61 @@ mod tests {
         }
 
         Ok(())
+    }
+
+    #[test]
+    fn video_url_builder_no_hl_no_region() {
+        let url = "https://yewtu.be".parse().expect("Valid URL should parse");
+        // A James Hoffman video.
+        let id = "QjIvN8mlK9Y"
+            .try_into()
+            .expect("Valid YouTube ID from YouTube itself should parse");
+
+        let builder = VideoUrl {
+            url: &url,
+            id,
+            hl: None,
+            region: None,
+        };
+        let actual: Url = builder
+            .try_into()
+            .expect("Converting VideoUrl to URL should work since the parts are validated");
+        let expected: Url = format!("https://yewtu.be/api/v1/videos/{id}")
+            .parse()
+            .expect("Valid URL should parse");
+
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn video_url_builder_hl_and_region() {
+        let url = "https://yewtu.be".parse().expect("Valid URL should parse");
+        // A James Hoffman video.
+        let id = "QjIvN8mlK9Y"
+            .try_into()
+            .expect("Valid YouTube ID from YouTube itself should parse");
+        let hl = Some(ExactStr::new("en").unwrap());
+        let region = Some(ExactStr::new("us").unwrap());
+
+        let builder = VideoUrl {
+            url: &url,
+            id,
+            hl,
+            region,
+        };
+        let actual: Url = builder
+            .try_into()
+            .expect("Converting VideoUrl to URL should work since the parts are validated");
+        #[allow(clippy::unnecessary_literal_unwrap)]
+        let expected: Url = format!(
+            "https://yewtu.be/api/v1/videos/{}?hl={}&region={}",
+            id,
+            hl.unwrap(),
+            region.unwrap()
+        )
+        .parse()
+        .expect("Valid URL should parse");
+
+        assert_eq!(expected, actual);
     }
 }
