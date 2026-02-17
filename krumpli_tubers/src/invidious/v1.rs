@@ -4,5 +4,6 @@
 //!
 //! See: https://docs.invidious.io/api/
 
+pub mod annotations;
 pub mod stats;
 pub mod videos;
