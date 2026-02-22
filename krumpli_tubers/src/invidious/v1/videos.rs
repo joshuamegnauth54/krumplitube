@@ -2,6 +2,7 @@
 
 use std::{num::NonZeroU32, time::Duration};
 
+use jiff::Zoned;
 use mime::Mime;
 use serde::Deserialize;
 use smol_str::SmolStr;
@@ -29,7 +30,8 @@ pub struct Video {
     pub storyboards: Vec<StoryBoard>,
     pub description: String,
     pub description_html: String,
-    pub published: u64,
+    #[serde(deserialize_with = "time::timestamp_to_zoned")]
+    pub published: Zoned,
     pub published_text: SmolStr,
     pub keywords: Vec<SmolStr>,
     pub like_count: u32,
@@ -48,8 +50,8 @@ pub struct Video {
     pub is_posted_live_dvr: bool,
     pub is_upcoming: bool,
     pub dash_url: Url,
-    #[serde(default)]
-    pub premiere_timestamp: u64,
+    #[serde(default, deserialize_with = "time::timestamp_to_zoned_opt")]
+    pub premiere_timestamp: Option<Zoned>,
     pub hls_url: Url,
     pub adaptive_formats: Vec<AdaptiveFormat>,
     pub format_streams: Vec<FormatStream>,
@@ -61,24 +63,33 @@ pub struct Video {
     pub recommended_videos: Vec<VideoMetadata>,
 }
 
+/// Metadata for [`Video`]s abstracted into its own type to reduce repetition.
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct VideoMetadata {
     pub video_id: YouTubeVideoId,
     pub title: String,
+    #[serde(flatten)]
+    pub author: AuthorMetadata,
     // XXX: How many thumbnails per video is normal?
     pub video_thumbnails: Vec<VideoThumbnail>,
+    #[serde(default)]
+    pub author_verified: bool,
+    #[serde(deserialize_with = "time::from_secs")]
+    pub length_seconds: Duration,
+    pub view_count: u32,
+    pub view_count_text: SmolStr,
+}
+
+/// Metadata for authors abstracted into its own type to reduce repetition.
+#[derive(Deserialize)]
+pub struct AuthorMetadata {
     pub author: SmolStr,
     #[serde(default)]
     pub author_id: Option<SmolStr>,
     pub author_url: Url,
     #[serde(default)]
-    pub author_verified: bool,
     pub author_thumbnails: Vec<AuthorThumbnail>,
-    #[serde(deserialize_with = "time::from_secs")]
-    pub length_seconds: Duration,
-    pub view_count: u32,
-    pub view_count_text: SmolStr,
 }
 
 #[derive(Deserialize)]

@@ -23,6 +23,7 @@ license = "GPL-3.0-or-later"
 
 [workspace.dependencies]
 http = "1"
+jiff = { version = "0.2", features = ["serde"] }
 mime = "0.3"
 reqwest = { version = "0.13", features = [
   "deflate",

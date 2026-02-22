@@ -105,9 +105,9 @@ pub struct Instance {
     pub flag: ExactStr<FLAG_LEN>,
     pub region: ExactStr<REGION_LEN>,
     pub stats: Option<Stats>,
-    #[serde(with = "serde_helpers::option_bool")]
+    #[serde(with = "serde_helpers::option_t")]
     pub cors: bool,
-    #[serde(with = "serde_helpers::option_bool")]
+    #[serde(with = "serde_helpers::option_t")]
     pub api: bool,
     #[serde(rename = "type")]
     pub protocol_type: ProtocolType,
