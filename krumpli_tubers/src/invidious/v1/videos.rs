@@ -332,7 +332,7 @@ mod tests {
     fn video_url_builder_hl_and_region() {
         let url = "https://yewtu.be".parse().expect("Valid URL should parse");
         // A James Hoffman video.
-        let id = "QjIvN8mlK9Y"
+        let id = "mZrgzQvNhXg"
             .try_into()
             .expect("Valid YouTube ID from YouTube itself should parse");
         let hl = Some(ExactStr::new("en").unwrap());

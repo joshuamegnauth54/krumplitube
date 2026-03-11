@@ -12,10 +12,11 @@ pub mod invidious;
 pub mod peertube;
 pub mod serde_helpers;
 
-/// Return a [`Url`] that can be used to fetch this type.
+/// Return a [`Url`] that can be used to fetch and deserialize this type.
 ///
-/// `Context` provides the data needed to build the [`Url`]. `Context` can be empty if a type
-/// doesn't need extra info or it could include a base URL, like for an instance.
+/// Types implementing this trait should include all of the context needed to actually build the
+/// URL. The base URL of the instance, if needed, is one such context.
 pub trait BuildApiUrl: TryInto<Url, Error: std::error::Error + 'static> {
+    /// Deserialized data from the endpoint.
     type Item: for<'de> Deserialize<'de>;
 }
