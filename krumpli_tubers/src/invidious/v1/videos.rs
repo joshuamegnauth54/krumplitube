@@ -10,6 +10,7 @@ use url::Url;
 
 use crate::{
     BuildApiUrl,
+    invidious::v1::captions::Caption,
     serde_helpers::{
         self,
         exact_str::{ExactStr, LANG_LEN, REGION_LEN},
@@ -204,14 +205,6 @@ pub struct FormatStream {
     pub quality_label: SmolStr,
     pub resolution: SmolStr,
     pub size: SmolStr,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Caption {
-    pub label: SmolStr,
-    pub language_code: ExactStr<LANG_LEN>,
-    pub url: Url,
 }
 
 #[derive(Deserialize)]

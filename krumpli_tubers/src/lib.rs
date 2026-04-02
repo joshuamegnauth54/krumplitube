@@ -15,7 +15,8 @@ pub mod serde_helpers;
 /// Return a [`Url`] that can be used to fetch and deserialize this type.
 ///
 /// Types implementing this trait should include all of the context needed to actually build the
-/// URL. The base URL of the instance, if needed, is one such context.
+/// URL. The base URL of the instance, if needed, is one such context as is the URL's
+/// parameters.
 pub trait BuildApiUrl: TryInto<Url, Error: std::error::Error + 'static> {
     /// Deserialized data from the endpoint.
     type Item: for<'de> Deserialize<'de>;
