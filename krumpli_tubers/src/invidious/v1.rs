@@ -8,4 +8,5 @@ pub mod annotations;
 pub mod captions;
 pub mod comments;
 pub mod stats;
+pub mod trending;
 pub mod videos;

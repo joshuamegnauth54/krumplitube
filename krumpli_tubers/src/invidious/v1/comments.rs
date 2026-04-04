@@ -136,7 +136,7 @@ mod tests {
     use crate::invidious::v1::comments::{CommentsUrl, SortBy, Source};
 
     #[test]
-    fn comments_url_no_source_no_sort_by() {
+    fn comments_url_no_parameters() {
         let url = "https://yewtu.be".parse().expect("Valid URL should parse");
         let id = "wX9Sc88qreg"
             .try_into()
@@ -159,7 +159,7 @@ mod tests {
     }
 
     #[test]
-    fn comments_url_source_sort_by() {
+    fn comments_url_all_parameters() {
         let url = "https://yewtu.be".parse().expect("Valid URL should parse");
         let id = "geNMz0J9TEQ"
             .try_into()

@@ -29,16 +29,11 @@ pub struct Video {
     #[serde(rename = "type")]
     pub video_type: VideoType,
     pub storyboards: Vec<StoryBoard>,
-    pub description: String,
-    pub description_html: String,
-    #[serde(deserialize_with = "time::timestamp_to_zoned")]
-    pub published: Zoned,
-    pub published_text: SmolStr,
     pub keywords: Vec<SmolStr>,
+    #[serde(flatten)]
+    pub published_metadata: PublishedMetadata,
     pub like_count: u32,
     pub dislike_count: u32,
-    pub paid: bool,
-    pub premium: bool,
     pub is_family_friendly: bool,
     pub allowed_regions: Vec<ExactStr<REGION_LEN>>,
     pub genre: SmolStr,
@@ -47,7 +42,6 @@ pub struct Video {
     pub allow_ratings: bool,
     pub rating: f32,
     pub is_listed: u32,
-    pub live_now: bool,
     pub is_posted_live_dvr: bool,
     pub is_upcoming: bool,
     pub dash_url: Url,
@@ -73,12 +67,14 @@ pub struct VideoMetadata {
     #[serde(flatten)]
     pub author: AuthorMetadata,
     // XXX: How many thumbnails per video is normal?
+    #[serde(default)]
     pub video_thumbnails: Vec<VideoThumbnail>,
     #[serde(default)]
     pub author_verified: bool,
     #[serde(deserialize_with = "time::from_secs")]
     pub length_seconds: Duration,
     pub view_count: u32,
+    #[serde(default)]
     pub view_count_text: SmolStr,
 }
 
@@ -91,6 +87,23 @@ pub struct AuthorMetadata {
     pub author_url: Url,
     #[serde(default)]
     pub author_thumbnails: Vec<AuthorThumbnail>,
+}
+
+/// Metadata for published info.
+#[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub struct PublishedMetadata {
+    #[serde(deserialize_with = "time::timestamp_to_zoned")]
+    pub published: Zoned,
+    pub published_text: SmolStr,
+    pub description: String,
+    pub description_html: String,
+    #[serde(default)]
+    pub live_now: bool,
+    #[serde(default)]
+    pub paid: bool,
+    #[serde(default)]
+    pub premium: bool,
 }
 
 #[derive(Deserialize)]
@@ -298,7 +311,7 @@ mod tests {
     }
 
     #[test]
-    fn video_url_builder_no_hl_no_region() {
+    fn video_url_no_parameters() {
         let url = "https://yewtu.be".parse().expect("Valid URL should parse");
         // A James Hoffman video.
         let id = "QjIvN8mlK9Y"
@@ -322,7 +335,7 @@ mod tests {
     }
 
     #[test]
-    fn video_url_builder_hl_and_region() {
+    fn video_url_all_parameters() {
         let url = "https://yewtu.be".parse().expect("Valid URL should parse");
         // A James Hoffman video.
         let id = "mZrgzQvNhXg"
