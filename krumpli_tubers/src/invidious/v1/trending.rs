@@ -7,7 +7,7 @@ use url::Url;
 
 use crate::{
     BuildApiUrl,
-    invidious::v1::videos::{AuthorMetadata, PublishedMetadata, VideoMetadata},
+    invidious::v1::videos::{AuthorMetadata, Description, Published, VideoMetadata},
     serde_helpers::exact_str::{ExactStr, LANG_LEN},
 };
 
@@ -21,7 +21,9 @@ pub struct Trending {
     #[serde(flatten)]
     pub author: AuthorMetadata,
     #[serde(flatten)]
-    pub published: PublishedMetadata,
+    pub published: Published,
+    #[serde(flatten)]
+    pub description: Description,
 }
 
 /// [`BuildApiUrl`] implementation for trending videos.

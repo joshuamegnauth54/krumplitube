@@ -31,7 +31,9 @@ pub struct Video {
     pub storyboards: Vec<StoryBoard>,
     pub keywords: Vec<SmolStr>,
     #[serde(flatten)]
-    pub published_metadata: PublishedMetadata,
+    pub published: Published,
+    #[serde(flatten)]
+    pub description: Description,
     pub like_count: u32,
     pub dislike_count: u32,
     pub is_family_friendly: bool,
@@ -92,18 +94,23 @@ pub struct AuthorMetadata {
 /// Metadata for published info.
 #[derive(Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub struct PublishedMetadata {
+pub struct Published {
     #[serde(deserialize_with = "time::timestamp_to_zoned")]
     pub published: Zoned,
     pub published_text: SmolStr,
-    pub description: String,
-    pub description_html: String,
     #[serde(default)]
     pub live_now: bool,
     #[serde(default)]
     pub paid: bool,
     #[serde(default)]
     pub premium: bool,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub struct Description {
+    pub description: String,
+    pub description_html: String,
 }
 
 #[derive(Deserialize)]
