@@ -11,6 +11,7 @@ jiff.workspace = true
 mime.workspace = true
 serde.workspace = true
 serde_bytes.workspace = true
+smallvec.workspace = true
 smol_str.workspace = true
 url.workspace = true
 

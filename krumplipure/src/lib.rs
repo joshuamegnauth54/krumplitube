@@ -10,3 +10,6 @@ pub use error::Error;
 
 pub mod invidious;
 pub use invidious::InvidiousClient;
+
+pub mod peertube;
+pub use peertube::PeerTubeClient;

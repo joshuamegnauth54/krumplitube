@@ -5,46 +5,19 @@
 //! Version 1.
 
 use serde::Deserialize;
-use smol_str::SmolStr;
 use url::Url;
 
-use crate::BuildApiUrl;
+use crate::{BuildApiUrl, common::NodeInfo};
 
 pub const ENDPOINT_STATS: &str = "api/v1/stats/";
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Stats {
-    pub version: SmolStr,
-    pub software: Software,
-    pub open_registrations: bool,
-    pub usage: Usage,
-    pub metadata: Metadata,
+    #[serde(flatten)]
+    pub node_info: NodeInfo<Metadata>,
+    #[serde(default)]
     pub playback: Playback,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Software {
-    /// Always "invidious."
-    pub name: SmolStr,
-    /// Version of Invidious. May be a git commit hash.
-    pub version: SmolStr,
-    pub branch: SmolStr,
-}
-
-#[derive(Default, Deserialize)]
-#[serde(default, rename_all = "camelCase")]
-pub struct Usage {
-    pub users: Users,
-}
-
-#[derive(Default, Deserialize)]
-#[serde(default, rename = "camelCase")]
-pub struct Users {
-    pub total: u32,
-    pub active_half_year: u32,
-    pub active_month: u32,
 }
 
 #[derive(Default, Deserialize)]

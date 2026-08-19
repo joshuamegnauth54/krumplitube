@@ -7,6 +7,7 @@
 use serde::Deserialize;
 use url::Url;
 
+pub mod common;
 pub mod error;
 pub mod invidious;
 pub mod peertube;
